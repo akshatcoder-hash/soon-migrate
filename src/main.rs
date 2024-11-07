@@ -1,4 +1,3 @@
-use clap::{Arg, ArgAction, Command};
 use colored::*;
 use indicatif::{ProgressBar, ProgressStyle};
 use std::process::exit;
