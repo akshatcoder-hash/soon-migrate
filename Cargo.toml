@@ -9,7 +9,7 @@ repository = "https://github.com/akshatcoder-hash/soon-migrate"
 homepage = "https://github.com/akshatcoder-hash/soon-migrate"
 documentation = "https://docs.rs/soon-migrate"
 readme = "README.md"
-keywords = ["solana", "anchor", "migration", "blockchain", "cli", "developer-tools"]
+keywords = ["solana", "anchor", "soon", "blockchain", "cli"]
 categories = ["command-line-utilities", "development-tools", "blockchain"]
 
 [dependencies]
