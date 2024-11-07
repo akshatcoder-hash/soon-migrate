@@ -10,7 +10,6 @@ homepage = "https://github.com/akshatcoder-hash/soon-migrate"
 documentation = "https://docs.rs/soon-migrate"
 readme = "README.md"
 keywords = ["solana", "anchor", "soon", "cli"]
-categories = ["command-line-utilities", "development-tools", "blockchain"]
 
 [dependencies]
 clap = { version = "4.1.8", features = ["derive"] }
