@@ -116,7 +116,7 @@ soon-migrate --restore
 2. **Backup**: Creates a backup of `Anchor.toml` before making changes.
 3. **Modification**: Updates the RPC URL in `Anchor.toml` to point to the SOON Network:
    ```
-   https://rpc.devnet.soo.network/rpc/rpc
+   https://rpc.devnet.soo.network/rpc
    ```
 4. **Logging**: Provides detailed progress, error messages, and final instructions.
 

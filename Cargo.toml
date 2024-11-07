@@ -1,6 +1,6 @@
 [package]
 name = "soon-migrate"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 authors = ["Akshat Sharma <akshatsharma0023@outlook.com>"]
 description = "CLI tool to migrate Solana Anchor projects to the SOON Network."
