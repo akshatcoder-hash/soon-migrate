@@ -1,9 +1,9 @@
 use crate::cli::Config;
 use crate::errors::MigrationError;
+use colored::*;
 use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
-use colored::*;
 
 #[derive(Deserialize, Serialize, Debug)]
 struct Provider {
@@ -44,13 +44,17 @@ pub fn run_migration(config: &Config) -> Result<(), MigrationError> {
         .map_err(|e| MigrationError::ReadFailed(e.to_string()))?;
 
     // Parse TOML
-    let mut toml_value: toml::Value = content.parse()
+    let mut toml_value: toml::Value = content
+        .parse()
         .map_err(|e: toml::de::Error| MigrationError::TomlParseError(e.to_string()))?;
 
     // Update the cluster value in the provider section
     if let Some(provider) = toml_value.get_mut("provider") {
         if let Some(table) = provider.as_table_mut() {
-            table.insert("cluster".to_string(), toml::Value::String("https://rpc.devnet.soo.network".to_string()));
+            table.insert(
+                "cluster".to_string(),
+                toml::Value::String("https://rpc.devnet.soo.network/rpc".to_string()),
+            );
         }
     }
 
@@ -62,18 +66,21 @@ pub fn run_migration(config: &Config) -> Result<(), MigrationError> {
     if !config.dry_run {
         let toml_string = toml::to_string_pretty(&toml_value)
             .map_err(|e| MigrationError::TomlParseError(e.to_string()))?;
-            
+
         fs::write(&anchor_toml_path, toml_string)
             .map_err(|e| MigrationError::WriteFailed(e.to_string()))?;
-            
+
         if config.verbose {
             println!("{}", "Anchor.toml written successfully.".cyan());
         }
     } else {
         println!("{}", "Dry run enabled. Changes not written.".yellow());
-        println!("{}", toml::to_string_pretty(&toml_value)
-            .map_err(|e| MigrationError::TomlParseError(e.to_string()))?
-            .cyan());
+        println!(
+            "{}",
+            toml::to_string_pretty(&toml_value)
+                .map_err(|e| MigrationError::TomlParseError(e.to_string()))?
+                .cyan()
+        );
     }
 
     Ok(())
@@ -84,7 +91,9 @@ pub fn restore_backup(path: &str) -> Result<(), MigrationError> {
     let backup_path = anchor_toml_path.with_extension("toml.bak");
 
     if !backup_path.exists() {
-        return Err(MigrationError::BackupNotFound(backup_path.to_string_lossy().into_owned()));
+        return Err(MigrationError::BackupNotFound(
+            backup_path.to_string_lossy().into_owned(),
+        ));
     }
 
     fs::copy(&backup_path, &anchor_toml_path)
@@ -136,15 +145,13 @@ wallet = "~/.config/solana/id.json"
 test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 "#;
 
-        fs::write(
-            temp_dir.path().join("Anchor.toml"),
-            anchor_toml_content,
-        ).unwrap();
+        fs::write(temp_dir.path().join("Anchor.toml"), anchor_toml_content).unwrap();
 
         fs::write(
             temp_dir.path().join("Cargo.toml"),
             "[package]\nname = \"test\"\nversion = \"0.1.0\"\n",
-        ).unwrap();
+        )
+        .unwrap();
 
         temp_dir
     }
@@ -161,7 +168,7 @@ test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 
         let result = run_migration(&config);
         assert!(result.is_ok());
-        
+
         // Verify original file wasn't changed
         let content = fs::read_to_string(test_dir.path().join("Anchor.toml")).unwrap();
         assert!(content.contains("cluster = \"Localnet\""));
@@ -182,8 +189,8 @@ test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
 
         // Verify file was changed
         let content = fs::read_to_string(test_dir.path().join("Anchor.toml")).unwrap();
-        assert!(content.contains("https://rpc.devnet.soo.network"));
-        
+        assert!(content.contains("https://rpc.devnet.soo.network/rpc"));
+
         // Verify backup was created
         assert!(Path::new(&test_dir.path().join("Anchor.toml.bak")).exists());
     }
@@ -191,7 +198,7 @@ test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
     #[test]
     fn test_restore_backup() {
         let test_dir = create_test_anchor_project();
-        
+
         // First run migration
         let config = Config {
             path: test_dir.path().to_str().unwrap().to_string(),

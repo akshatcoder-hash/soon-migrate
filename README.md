@@ -65,7 +65,7 @@ soon-migrate --restore
 
 ### Full Command Reference
 
-- **Basic Migration**: 
+- **Basic Migration**:
   ```bash
   soon-migrate
   ```
@@ -116,7 +116,7 @@ soon-migrate --restore
 2. **Backup**: Creates a backup of `Anchor.toml` before making changes.
 3. **Modification**: Updates the RPC URL in `Anchor.toml` to point to the SOON Network:
    ```
-   https://rpc.devnet.soo.network
+   https://rpc.devnet.soo.network/rpc/rpc
    ```
 4. **Logging**: Provides detailed progress, error messages, and final instructions.
 
@@ -155,7 +155,6 @@ Licensed under the **MIT License** ([LICENSE-MIT](LICENSE-MIT) or http://opensou
 - **GitHub**: [akshatcoder-hash](https://github.com/akshatcoder-hash)
 
 If you have any questions or suggestions, feel free to reach out!
-
 
 ---
 
