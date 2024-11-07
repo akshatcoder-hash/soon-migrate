@@ -7,8 +7,6 @@ use std::time::Duration;
 mod cli;
 mod errors;
 mod migration;
-mod utils;
-
 use cli::Config;
 use migration::{restore_backup, run_migration};
 
