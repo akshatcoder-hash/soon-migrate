@@ -2,6 +2,15 @@
 name = "soon-migrate"
 version = "0.1.0"
 edition = "2021"
+authors = ["Akshat Sharma <akshatsharma0023@outlook.com>"]
+description = "CLI tool to migrate Solana Anchor projects to the SOON Network."
+license = "MIT"
+repository = "https://github.com/akshatcoder-hash/soon-migrate"
+homepage = "https://github.com/akshatcoder-hash/soon-migrate"
+documentation = "https://docs.rs/soon-migrate"
+readme = "README.md"
+keywords = ["solana", "anchor", "migration", "blockchain", "cli", "developer-tools"]
+categories = ["command-line-utilities", "development-tools", "blockchain"]
 
 [dependencies]
 clap = { version = "4.1.8", features = ["derive"] }
@@ -10,3 +19,4 @@ toml = "0.7"
 colored = "2.0"
 indicatif = "0.17"
 thiserror = "1.0"
+tempfile = "3.8"
