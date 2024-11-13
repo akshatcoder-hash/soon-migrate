@@ -25,6 +25,11 @@ struct AnchorToml {
     extra: std::collections::HashMap<String, toml::Value>,
 }
 
+fn map_cluster_to_soon(cluster: &str) -> &'static str {
+    // Always return devnet RPC for now, regardless of input cluster
+    "https://rpc.devnet.soo.network/rpc"
+}
+
 pub fn run_migration(config: &Config) -> Result<(), MigrationError> {
     validate_anchor_project(&config.path)?;
 
@@ -51,15 +56,36 @@ pub fn run_migration(config: &Config) -> Result<(), MigrationError> {
     // Update the cluster value in the provider section
     if let Some(provider) = toml_value.get_mut("provider") {
         if let Some(table) = provider.as_table_mut() {
-            table.insert(
-                "cluster".to_string(),
-                toml::Value::String("https://rpc.devnet.soo.network/rpc".to_string()),
-            );
+            // Store cluster value first before modifying table
+            let cluster_value = table.get("cluster")
+                .and_then(|c| c.as_str())
+                .map(|c| c.to_string());
+            
+            if let Some(cluster) = cluster_value {
+                let soon_rpc = map_cluster_to_soon(&cluster);
+                table.insert("cluster".to_string(), toml::Value::String(soon_rpc.to_string()));
+                
+                if config.verbose {
+                    println!("{}", format!("Updating cluster from '{}' to '{}'", cluster, soon_rpc).cyan());
+                }
+            }
+        }
+    }
+
+    // Update programs section: change programs.localnet to programs.devnet
+    if let Some(programs) = toml_value.get_mut("programs") {
+        if let Some(table) = programs.as_table_mut() {
+            if let Some(localnet) = table.remove("localnet") {
+                table.insert("devnet".to_string(), localnet);
+                if config.verbose {
+                    println!("{}", "Updated programs.localnet to programs.devnet".cyan());
+                }
+            }
         }
     }
 
     if config.verbose {
-        println!("{}", "Cluster RPC URL updated.".cyan());
+        println!("{}", "Configuration updated successfully.".cyan());
     }
 
     // Write back to Anchor.toml unless dry_run
@@ -98,6 +124,11 @@ pub fn restore_backup(path: &str) -> Result<(), MigrationError> {
 
     fs::copy(&backup_path, &anchor_toml_path)
         .map_err(|e| MigrationError::RestoreFailed(e.to_string()))?;
+
+    if Path::new(&backup_path).exists() {
+        fs::remove_file(backup_path)
+            .map_err(|e| MigrationError::RestoreFailed(e.to_string()))?;
+    }
 
     Ok(())
 }
@@ -190,6 +221,7 @@ test = "yarn run ts-mocha -p ./tsconfig.json -t 1000000 tests/**/*.ts"
         // Verify file was changed
         let content = fs::read_to_string(test_dir.path().join("Anchor.toml")).unwrap();
         assert!(content.contains("https://rpc.devnet.soo.network/rpc"));
+        assert!(content.contains("[programs.devnet]"));
 
         // Verify backup was created
         assert!(Path::new(&test_dir.path().join("Anchor.toml.bak")).exists());
