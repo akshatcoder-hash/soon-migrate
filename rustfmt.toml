@@ -1,0 +1,32 @@
+# Basic Formatting
+max_width = 100
+hard_tabs = false
+tab_spaces = 4
+newline_style = "Auto"
+use_small_heuristics = "Max"
+
+# Imports
+reorder_imports = true
+imports_granularity = "Crate"
+
+# Control Style
+match_arm_blocks = true
+match_arm_leading_pipes = "Never"
+
+# Chain Style
+wrap_comments = true
+format_code_in_doc_comments = true
+
+# Control Style
+control_brace_style = "AlwaysSameLine"
+remove_nested_parens = true
+
+# Formatting Macros
+format_macro_matchers = true
+format_macro_bodies = true
+
+# Error Handling
+error_on_line_overflow = true
+
+# Documentation
+normalize_doc_attributes = true

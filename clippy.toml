@@ -1,0 +1,70 @@
+# Documentation
+# https://rust-lang.github.io/rust-clippy/master/
+
+# Allow lints that are triggered by procedural macros
+disallowed-methods = [
+    "std::env::var",
+    "std::env::set_var",
+    "std::fs::File::create",
+    "std::fs::File::open",
+    "std::fs::read",
+    "std::fs::read_dir",
+    "std::fs::read_link",
+    "std::fs::read_to_string",
+    "std::fs::write",
+    "std::process::Command::new",
+]
+
+# Allow some lints that are too strict or not applicable
+disallowed-types = [
+    "std::boxed::Box",
+    "std::vec::Vec",
+]
+
+# Allow some lints that are too strict or not applicable
+# in test code
+test-init-order = false
+
+# Allow some lints that are too strict or not applicable
+# in test code
+test-unstable-lint = false
+
+# Allow some lints that are too strict or not applicable
+# in test code
+too-many-arguments = { threshold = 10 }
+
+# Allow some lints that are too strict or not applicable
+# in test code
+too-many-lines = { threshold = 1000 }
+
+# Allow some lints that are too strict or not applicable
+# in test code
+type-complexity = { threshold = 25 }
+
+# Allow some lints that are too strict or not applicable
+# in test code
+module-name-repetitions = { threshold = 20 }
+
+# Allow some lints that are too strict or not applicable
+# in test code
+result-unit-err = false
+
+# Allow some lints that are too strict or not applicable
+# in test code
+wildcard-imports = false
+
+# Allow some lints that are too strict or not applicable
+# in test code
+missing-errors-doc = false
+
+# Allow some lints that are too strict or not applicable
+# in test code
+missing-panics-doc = false
+
+# Allow some lints that are too strict or not applicable
+# in test code
+missing-safety-doc = false
+
+# Allow some lints that are too strict or not applicable
+# in test code
+must-use-candidate = false
