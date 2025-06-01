@@ -1,13 +1,23 @@
 # soon-migrate
 
-🚀 `soon-migrate` is a CLI tool that helps developers migrate their Solana Anchor projects to the SOON Network. It modifies the `Anchor.toml` configuration file and updates the cluster RPC URL to point to the SOON Network, among other tasks. This tool is designed to simplify the process of upgrading and migrating existing Solana Anchor projects.
+[![Rust Report Card](https://rust-reportcard.xuri.me/badge/github.com/akshatcoder-hash/soon-migrate)](https://rust-reportcard.xuri.me/report/github.com/akshatcoder-hash/soon-migrate)
+[![Crates.io](https://img.shields.io/crates/v/soon-migrate)](https://crates.io/crates/soon-migrate)
+[![Downloads](https://img.shields.io/crates/d/soon-migrate)](https://crates.io/crates/soon-migrate)
+[![License](https://img.shields.io/crates/l/soon-migrate)](https://crates.io/crates/soon-migrate)
+[![Documentation](https://docs.rs/soon-migrate/badge.svg)](https://docs.rs/soon-migrate)
+[![Build Status](https://github.com/akshatcoder-hash/soon-migrate/actions/workflows/rust.yml/badge.svg)](https://github.com/akshatcoder-hash/soon-migrate/actions)
+
+🚀 `soon-migrate` is a CLI tool that helps developers migrate their Solana Anchor projects to the SOON Network. It modifies the `Anchor.toml` configuration file, updates the cluster RPC URL, and provides oracle detection and migration guidance. This tool simplifies the process of upgrading and migrating existing Solana Anchor projects to the SOON ecosystem.
 
 ## Features
 
 - 🛠 **Automatic Migration**: Updates the `Anchor.toml` file to migrate from standard Solana clusters to SOON Network.
-- 📾 **Backup & Restore**: Automatically backs up the existing `Anchor.toml` to ensure you can restore it if needed.
-- 🔍 **Dry Run Option**: See what changes would be made without applying them.
-- 🗑 **Verbose Logging**: Provides detailed output to help you understand the migration process.
+- 🔍 **Oracle Detection**: Automatically detects and provides migration guidance for various oracle providers (Pyth, Switchboard, Chainlink, etc.).
+- 📦 **APRO Integration**: Generates comprehensive guides for integrating with APRO (SOON's oracle solution).
+- 📊 **Configuration Management**: Handles cluster and program configurations seamlessly.
+- 📦 **Backup & Restore**: Automatically backs up the existing `Anchor.toml` to ensure you can restore it if needed.
+- 🔍 **Dry Run Option**: Preview changes before applying them.
+- 🗑 **Verbose Logging**: Detailed output to help you understand the migration process.
 
 ## Installation
 
@@ -89,21 +99,23 @@ soon-migrate --restore
 ## Example Workflow
 
 1. **Run a Dry Run** to see what changes will be made:
-
    ```bash
    soon-migrate --dry-run
    ```
 
 2. **Run the Actual Migration** after reviewing the dry run output:
-
    ```bash
    soon-migrate
    ```
 
-3. **Verify** the updated `Anchor.toml` and run your project's tests.
+3. **For Oracle Migration**, review the generated guide:
+   ```bash
+   soon-migrate --oracle
+   ```
 
-4. If something went wrong, **restore from the backup**:
+4. **Verify** the updated `Anchor.toml` and run your project's tests.
 
+5. If something went wrong, **restore from the backup**:
    ```bash
    soon-migrate --restore
    ```
@@ -112,13 +124,12 @@ soon-migrate --restore
 
 `soon-migrate` performs the following tasks:
 
-1. **Validation**: Ensures that the specified directory is a valid Anchor project with `Anchor.toml` and `Cargo.toml`.
-2. **Backup**: Creates a backup of `Anchor.toml` before making changes.
-3. **Modification**: Updates the RPC URL in `Anchor.toml` to point to the SOON Network:
-   ```
-   https://rpc.devnet.soo.network/rpc
-   ```
-4. **Logging**: Provides detailed progress, error messages, and final instructions.
+1. **Project Validation**: Ensures the directory is a valid Anchor project with `Anchor.toml` and `Cargo.toml`.
+2. **Backup Creation**: Creates a backup of `Anchor.toml` before making any changes.
+3. **Network Migration**: Updates the RPC URL in `Anchor.toml` to point to the SOON Network.
+4. **Oracle Detection**: Scans your project for oracle usage and provides migration guidance.
+5. **Configuration Updates**: Handles program IDs and cluster configurations specific to SOON Network.
+6. **Documentation**: Generates detailed migration guides for detected oracles.
 
 ## Contributing
 
@@ -127,22 +138,30 @@ Contributions are welcome! Please feel free to submit a Pull Request or open an 
 ### Development Setup
 
 1. **Clone the Repository**:
-
    ```bash
    git clone https://github.com/akshatcoder-hash/soon-migrate.git
    cd soon-migrate
    ```
 
 2. **Build the Project**:
-
    ```bash
    cargo build
    ```
 
 3. **Run Tests**:
-
    ```bash
    cargo test
+   ```
+
+4. **Run Linting**:
+   ```bash
+   cargo clippy -- -D warnings
+   cargo fmt --check
+   ```
+
+5. **Generate Documentation**:
+   ```bash
+   cargo doc --no-deps --open
    ```
 
 ## License
