@@ -5,7 +5,6 @@
 [![Downloads](https://img.shields.io/crates/d/soon-migrate)](https://crates.io/crates/soon-migrate)
 [![License](https://img.shields.io/crates/l/soon-migrate)](https://crates.io/crates/soon-migrate)
 [![Documentation](https://docs.rs/soon-migrate/badge.svg)](https://docs.rs/soon-migrate)
-[![Build Status](https://github.com/akshatcoder-hash/soon-migrate/actions/workflows/rust.yml/badge.svg)](https://github.com/akshatcoder-hash/soon-migrate/actions)
 
 🚀 `soon-migrate` is a CLI tool that helps developers migrate their Solana Anchor projects to the SOON Network. It modifies the `Anchor.toml` configuration file, updates the cluster RPC URL, and provides oracle detection and migration guidance. This tool simplifies the process of upgrading and migrating existing Solana Anchor projects to the SOON ecosystem.
 
