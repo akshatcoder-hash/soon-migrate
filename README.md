@@ -98,16 +98,19 @@ soon-migrate --restore
 ## Example Workflow
 
 1. **Run a Dry Run** to see what changes will be made:
+
    ```bash
    soon-migrate --dry-run
    ```
 
 2. **Run the Actual Migration** after reviewing the dry run output:
+
    ```bash
    soon-migrate
    ```
 
 3. **For Oracle Migration**, review the generated guide:
+
    ```bash
    soon-migrate --oracle
    ```
@@ -137,22 +140,26 @@ Contributions are welcome! Please feel free to submit a Pull Request or open an 
 ### Development Setup
 
 1. **Clone the Repository**:
+
    ```bash
    git clone https://github.com/akshatcoder-hash/soon-migrate.git
    cd soon-migrate
    ```
 
 2. **Build the Project**:
+
    ```bash
    cargo build
    ```
 
 3. **Run Tests**:
+
    ```bash
    cargo test
    ```
 
 4. **Run Linting**:
+
    ```bash
    cargo clippy -- -D warnings
    cargo fmt --check

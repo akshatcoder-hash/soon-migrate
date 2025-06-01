@@ -1,3 +1,8 @@
+//! Migration module for handling the migration of Solana Anchor projects to the SOON Network.
+//!
+//! This module provides functionality to migrate Anchor.toml configuration files,
+//! detect oracles, and handle backup/restore operations.
+
 use crate::cli::Config;
 use crate::errors::MigrationError;
 use crate::oracle::{OracleDetector, OracleReport};
@@ -6,31 +11,45 @@ use serde::{Deserialize, Serialize};
 use std::fs;
 use std::path::Path;
 
+/// Represents the provider configuration in Anchor.toml
 #[derive(Deserialize, Serialize, Debug)]
 struct Provider {
+    /// The cluster URL or name (e.g., "mainnet-beta", "testnet", "devnet")
     cluster: String,
+    /// The wallet path or configuration
     wallet: String,
 }
 
+/// Represents the programs section in Anchor.toml
 #[derive(Deserialize, Serialize, Debug)]
 struct Programs {
+    /// Program IDs for the localnet environment
     #[serde(rename = "localnet")]
     localnet: std::collections::HashMap<String, String>,
 }
 
+/// Represents the structure of an Anchor.toml file
 #[derive(Deserialize, Serialize, Debug)]
 struct AnchorToml {
+    /// Provider configuration
     provider: Provider,
+    /// Program configurations
     programs: Programs,
+    /// Any additional fields that aren't explicitly defined
     #[serde(flatten)]
     extra: std::collections::HashMap<String, toml::Value>,
 }
 
+/// The result of a migration operation
 #[derive(Debug)]
 pub struct MigrationResult {
+    /// Whether the configuration was updated
     pub config_updated: bool,
+    /// Optional report about detected oracles
     pub oracle_report: Option<OracleReport>,
+    /// Any warnings that occurred during migration
     pub warnings: Vec<String>,
+    /// Recommended next steps for the user
     pub next_steps: Vec<String>,
 }
 
@@ -42,6 +61,16 @@ fn map_cluster_to_soon(cluster: &str) -> &'static str {
     }
 }
 
+/// Run the migration process for an Anchor project
+///
+/// # Arguments
+/// * `config` - Configuration for the migration
+///
+/// # Returns
+/// A `Result` containing the migration result or an error
+///
+/// # Errors
+/// Returns `MigrationError` if any step of the migration fails
 pub fn run_migration(config: &Config) -> Result<MigrationResult, MigrationError> {
     validate_anchor_project(&config.path)?;
 
@@ -198,11 +227,31 @@ pub fn run_migration(config: &Config) -> Result<MigrationResult, MigrationError>
     Ok(result)
 }
 
+/// Scan the project for oracles without performing any migrations
+///
+/// # Arguments
+/// * `config` - Configuration for the oracle scan
+///
+/// # Returns
+/// A `Result` containing the oracle report or an error
+///
+/// # Errors
+/// Returns `MigrationError` if the oracle detection fails
 pub fn run_oracle_scan_only(config: &Config) -> Result<OracleReport, MigrationError> {
     validate_anchor_project(&config.path)?;
     OracleDetector::scan_project(&config.path, config.verbose)
 }
 
+/// Restore the Anchor.toml file from a backup
+///
+/// # Arguments
+/// * `path` - Path to the backup file
+///
+/// # Returns
+/// A `Result` indicating success or an error
+///
+/// # Errors
+/// Returns `MigrationError` if the backup cannot be restored
 pub fn restore_backup(path: &str) -> Result<(), MigrationError> {
     let anchor_toml_path = Path::new(path).join("Anchor.toml");
     let backup_path = anchor_toml_path.with_extension("toml.bak");
@@ -224,6 +273,16 @@ pub fn restore_backup(path: &str) -> Result<(), MigrationError> {
     Ok(())
 }
 
+/// Validate that the given path contains a valid Anchor project
+///
+/// # Arguments
+/// * `path` - Path to validate as an Anchor project
+///
+/// # Returns
+/// A `Result` indicating if the path is valid or an error
+///
+/// # Errors
+/// Returns `MigrationError::NotAnAnchorProject` if validation fails
 fn validate_anchor_project(path: &str) -> Result<(), MigrationError> {
     let anchor_toml_path = Path::new(path).join("Anchor.toml");
     if !anchor_toml_path.exists() {

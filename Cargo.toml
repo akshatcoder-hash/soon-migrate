@@ -1,15 +1,27 @@
 [package]
 name = "soon-migrate"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 authors = ["Akshat Sharma <akshatsharma0023@outlook.com>"]
 description = "CLI tool to migrate Solana Anchor projects to the SOON Network."
 license = "MIT"
 repository = "https://github.com/akshatcoder-hash/soon-migrate"
 homepage = "https://github.com/akshatcoder-hash/soon-migrate"
-documentation = "https://docs.rs/soon-migrate"
+documentation = "https://docs.rs/soon-migrate/latest/soon_migrate/"
 readme = "README.md"
 keywords = ["solana", "anchor", "soon", "cli"]
+
+# Build configuration
+[lib]
+name = "soon_migrate"
+path = "src/lib.rs"
+doc = true
+
+# Binary configuration
+[[bin]]
+name = "soon-migrate"
+path = "src/main.rs"
+doc = false
 
 [dependencies]
 clap = { version = "4.1.8", features = ["derive"] }

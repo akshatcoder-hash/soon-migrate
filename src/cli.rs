@@ -1,16 +1,32 @@
+//! Command-line interface module for the SOON Network migration tool.
+//!
+//! This module handles command-line argument parsing and configuration
+//! for the migration process.
+
 use clap::{Arg, ArgAction, Command};
 
+/// Configuration options for the migration tool
 #[derive(Debug)]
 pub struct Config {
+    /// Path to the Anchor project directory
     pub path: String,
+    /// Whether to perform a dry run without making changes
     pub dry_run: bool,
+    /// Whether to enable verbose output
     pub verbose: bool,
+    /// Whether to restore from a backup
     pub restore: bool,
+    /// Whether to show the APRO integration guide
     pub show_guide: bool,
+    /// Whether to only run oracle detection
     pub oracle_only: bool,
 }
 
 impl Config {
+    /// Create a new Config by parsing command line arguments
+    ///
+    /// # Returns
+    /// A new `Config` instance with options parsed from command line arguments
     pub fn new() -> Self {
         let matches = Command::new("soon-migrate")
             .version("0.2.0")

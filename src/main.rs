@@ -1,16 +1,13 @@
 use colored::*;
 use indicatif::{ProgressBar, ProgressStyle};
+use soon_migrate::{
+    cli::Config,
+    migration::{restore_backup, run_migration, run_oracle_scan_only},
+    oracle::OracleDetector,
+    MigrationError,
+};
 use std::process::exit;
 use std::time::Duration;
-
-mod cli;
-mod errors;
-mod migration;
-mod oracle;
-
-use cli::Config;
-use migration::{restore_backup, run_migration, run_oracle_scan_only};
-use oracle::OracleDetector;
 
 fn main() {
     let config = Config::new();
@@ -85,10 +82,7 @@ fn main() {
             println!("{}", "=== Migration Summary ===".bold().green());
 
             if result.config_updated {
-                println!(
-                    "{} Anchor.toml configuration updated for SOON Network",
-                    "✅".green()
-                );
+                println!("{} Anchor.toml configuration updated for SOON Network", "✅".green());
             } else if config.dry_run {
                 println!("{} Dry run completed - no files were modified", "ℹ️".blue());
             } else {
@@ -132,10 +126,7 @@ fn main() {
             }
 
             println!();
-            println!(
-                "{}",
-                "🎉 Migration to SOON Network complete!".bold().green()
-            );
+            println!("{}", "🎉 Migration to SOON Network complete!".bold().green());
             println!("   Visit https://docs.soo.network for more information");
         }
         Err(e) => {
@@ -146,7 +137,7 @@ fn main() {
 
             // Provide helpful suggestions based on error type
             match &e {
-                errors::MigrationError::NotAnAnchorProject(_) => {
+                MigrationError::NotAnAnchorProject(_) => {
                     eprintln!();
                     eprintln!(
                         "{}",
@@ -155,7 +146,7 @@ fn main() {
                     eprintln!("   • Anchor.toml file");
                     eprintln!("   • Cargo.toml file");
                 }
-                errors::MigrationError::OracleDetectionFailed(_) => {
+                MigrationError::OracleDetectionFailed(_) => {
                     eprintln!();
                     eprintln!(
                         "{}",

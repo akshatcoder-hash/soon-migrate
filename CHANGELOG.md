@@ -8,11 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 
 ### Added
+
 - (Nothing yet)
 
 ## [0.2.0] - 2025-06-02
 
 ### Added
+
 - Oracle detection and migration guide with APRO integration
 - Configuration for handling cluster and programs changes
 - Basic project structure and core functionality
@@ -21,6 +23,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Enhanced configuration handling
 - Comprehensive test suite
 - Documentation improvements
+- Library crate support with `soon_migrate` module
+- Workspace configuration for better dependency management
 
 ## [0.1.3] - 2024-11-14
 

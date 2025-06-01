@@ -1,3 +1,8 @@
+//! Oracle detection and analysis module for the SOON Network migration tool.
+//!
+//! This module provides functionality to detect and analyze oracle usage in Solana programs,
+//! with support for various oracle providers like Pyth, Switchboard, and Chainlink.
+
 use crate::errors::MigrationError;
 use colored::*;
 use serde::{Deserialize, Serialize};
@@ -5,50 +10,97 @@ use std::collections::HashMap;
 use std::fs;
 use std::path::Path;
 
+/// Represents a detected oracle usage in the codebase.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct OracleDetection {
+    /// Type of the detected oracle
     pub oracle_type: OracleType,
+    /// Confidence level of the detection
     pub confidence: ConfidenceLevel,
+    /// Locations in the code where this oracle was detected
     pub locations: Vec<DetectionLocation>,
+ /// Suggested migration steps for this oracle
     pub migration_suggestion: String,
 }
 
+/// Types of oracles that can be detected in the codebase.
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum OracleType {
+    /// Pyth Network oracle
     Pyth,
+    /// Switchboard oracle
     Switchboard,
+    /// Chainlink oracle
     Chainlink,
+    /// DIA oracle
     DIA,
+    /// RedStone oracle
     RedStone,
+    /// APRO oracle
     APRO,
+    /// Unknown oracle type
     Unknown,
 }
 
+/// Confidence level for oracle detections
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub enum ConfidenceLevel {
-    High,    // Found in dependencies + code usage
-    Medium,  // Found in dependencies OR clear code patterns
-    Low,     // Found in comments or weak patterns
+    /// High confidence - Found in dependencies and code usage
+    High,
+    /// Medium confidence - Found in dependencies OR clear code patterns
+    Medium,
+    /// Low confidence - Found in comments or weak patterns
+    Low,
 }
 
+/// Represents a location in the source code where an oracle was detected
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct DetectionLocation {
+    /// Path to the file where the oracle was detected
     pub file_path: String,
+    /// Line number where the oracle was detected (if available)
     pub line_number: Option<usize>,
+    /// The code pattern that was matched
     pub pattern_matched: String,
+    /// Additional context about the detection
     pub context: String,
 }
 
+/// A report containing all detected oracles and migration recommendations
 #[derive(Debug, Serialize, Deserialize)]
 pub struct OracleReport {
+    /// List of all detected oracles in the project
     pub detected_oracles: Vec<OracleDetection>,
+    /// List of recommendations for migrating the detected oracles
     pub migration_recommendations: Vec<String>,
+    /// Optional APRO integration guide for the detected oracles
     pub apro_integration_guide: Option<String>,
 }
 
+/// Detector for identifying oracle usage in Solana programs
 pub struct OracleDetector;
 
 impl OracleDetector {
+    /// Scans a Solana project for oracle usage and generates a detailed report.
+    ///
+    /// This function analyzes the project's source code and dependencies to detect
+    /// any oracle integrations, such as Pyth, Switchboard, or Chainlink.
+    ///
+    /// # Arguments
+    /// * `path` - Path to the root directory of the Solana project
+    /// * `verbose` - Whether to enable verbose output during scanning
+    ///
+    /// # Returns
+    /// A `Result` containing an `OracleReport` with the scan results, or a `MigrationError`
+    /// if the scan fails.
+    ///
+    /// # Examples
+    /// ```no_run
+    /// use soon_migrate::oracle::OracleDetector;
+    ///
+    /// let report = OracleDetector::scan_project("./my_project", true).unwrap();
+    /// println!("Found {} oracle usages", report.detected_oracles.len());
+    /// ```
     pub fn scan_project(path: &str, verbose: bool) -> Result<OracleReport, MigrationError> {
         if verbose {
             println!("{}", "Scanning project for oracle usage...".cyan());
@@ -84,6 +136,13 @@ impl OracleDetector {
         })
     }
 
+    /// Scan Cargo.toml for oracle-related dependencies
+    ///
+    /// # Arguments
+    /// * `path` - Path to the project directory
+    ///
+    /// # Returns
+    /// A `Result` containing a list of oracle detections or an error
     fn scan_cargo_toml(path: &str) -> Result<Vec<OracleDetection>, MigrationError> {
         let cargo_path = Path::new(path).join("Cargo.toml");
         if !cargo_path.exists() {
@@ -144,6 +203,13 @@ impl OracleDetector {
         Ok(detections)
     }
 
+    /// Scan Rust source files for oracle usage patterns
+    ///
+    /// # Arguments
+    /// * `path` - Path to the project directory
+    ///
+    /// # Returns
+    /// A `Result` containing a list of oracle detections or an error
     fn scan_rust_files(path: &str) -> Result<Vec<OracleDetection>, MigrationError> {
         let mut detections = Vec::new();
         
@@ -162,6 +228,14 @@ impl OracleDetector {
         Ok(detections)
     }
 
+    /// Scan Rust source code content for oracle patterns
+    ///
+    /// # Arguments
+    /// * `content` - The Rust source code to scan
+    /// * `file_path` - Path to the source file (for reporting)
+    ///
+    /// # Returns
+    /// A `Result` containing a list of oracle detections or an error
     fn scan_rust_content(content: &str, file_path: &Path) -> Result<Vec<OracleDetection>, MigrationError> {
         let mut detections = Vec::new();
         let file_path_str = file_path.to_string_lossy().to_string();
@@ -295,6 +369,14 @@ impl OracleDetector {
         Ok(detections)
     }
 
+    /// Recursively walk a directory and apply a callback to each file
+    ///
+    /// # Arguments
+    /// * `dir` - Directory to walk
+    /// * `callback` - Callback function to apply to each file
+    ///
+    /// # Returns
+    /// A `Result` indicating success or an error
     fn walk_directory<F>(dir: &Path, callback: &mut F) -> Result<(), MigrationError>
     where
         F: FnMut(&Path) -> Result<(), MigrationError>,
@@ -325,6 +407,14 @@ impl OracleDetector {
         Ok(())
     }
 
+    /// Find the line number of a pattern in a string
+    ///
+    /// # Arguments
+    /// * `content` - The content to search in
+    /// * `pattern` - The pattern to search for
+    ///
+    /// # Returns
+    /// The line number where the pattern was found, or `None` if not found
     fn find_line_number(content: &str, pattern: &str) -> Option<usize> {
         content
             .lines()
@@ -333,6 +423,13 @@ impl OracleDetector {
             .map(|(i, _)| i + 1)
     }
 
+    /// Merge duplicate oracle detections
+    ///
+    /// # Arguments
+    /// * `detections` - List of detections to merge
+    ///
+    /// # Returns
+    /// A deduplicated list of detections with merged locations
     fn merge_detections(detections: Vec<OracleDetection>) -> Vec<OracleDetection> {
         let mut oracle_map: HashMap<String, OracleDetection> = HashMap::new();
         
@@ -356,6 +453,13 @@ impl OracleDetector {
         oracle_map.into_values().collect()
     }
 
+    /// Generate migration recommendations based on detected oracles
+    ///
+    /// # Arguments
+    /// * `detections` - List of detected oracles
+    ///
+    /// # Returns
+    /// A list of migration recommendations
     fn generate_recommendations(detections: &[OracleDetection]) -> Vec<String> {
         let mut recommendations = Vec::new();
         
@@ -398,6 +502,13 @@ impl OracleDetector {
         recommendations
     }
 
+    /// Generate an APRO integration guide for the detected oracles
+    ///
+    /// # Arguments
+    /// * `detections` - List of detected oracles
+    ///
+    /// # Returns
+    /// A formatted APRO integration guide
     fn generate_apro_guide(detections: &[OracleDetection]) -> String {
         let mut guide = String::new();
         
@@ -484,6 +595,11 @@ impl OracleDetector {
         guide
     }
 
+    /// Print a formatted oracle detection report
+    ///
+    /// # Arguments
+    /// * `report` - The oracle report to print
+    /// * `verbose` - Whether to include detailed information
     pub fn print_report(report: &OracleReport, verbose: bool) {
         println!("{}", "=== Oracle Detection Report ===".bold().cyan());
         println!();
@@ -545,6 +661,10 @@ impl OracleDetector {
         }
     }
 
+    /// Print the APRO integration guide if available
+    ///
+    /// # Arguments
+    /// * `report` - The oracle report containing the guide
     pub fn print_integration_guide(report: &OracleReport) {
         if let Some(guide) = &report.apro_integration_guide {
             println!("{}", guide);
